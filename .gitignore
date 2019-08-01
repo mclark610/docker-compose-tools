@@ -1,0 +1,10 @@
+.env_redmine
+.env_mariadb
+.env_mongo
+.env_pgadmin
+.env_postgres
+.env_openproject
+.env_vault
+backups
+scripts
+jenkins_home

@@ -1,0 +1,97 @@
+version: '3.1'
+services:
+  redis:
+    image: redis
+    container_name: some-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - 6379:6379
+
+  mongo:
+    image: mongo
+    container_name: some-mongo
+    restart: always
+    env_file:
+    - ./.env_mongo
+    volumes:
+    - /data/mongo:/data/db
+    - /data/raw:/data/raw
+    ports:
+    - 27017:27017
+
+  mariadb:
+    image: mariadb
+    container_name: some-mariadb
+    env_file:
+    - ./.env_mariadb
+    volumes: 
+    - /data/mysql:/var/lib/mysql
+    - /data/raw:/data/raw
+    ports:
+    - 0.0.0.0:3306:3306
+
+  redmine:
+    image: redmine
+    container_name: some-redmine
+    restart: always
+    ports:
+      - 8082:3000
+    env_file:
+    - ./.env_redmine
+    links:
+    - postgres 
+    depends_on:
+    - postgres
+    volumes:
+    - /var/lib/redmine/files:/usr/src/redmin/files
+ 
+  openproject:
+    image: openproject/community:8.3.0
+    container_name: some-openproject
+    env_file:
+    - ./.env_openproject
+    links:
+    - mariadb
+    depends_on:
+    -  mariadb
+    volumes:
+    - /var/lib/openproject/data:/var/db/openproject
+    ports:
+    - 8080:80
+
+# to use vault from command line: docker exec -it some-vault /bin/sh
+  vault:
+    image: vault
+    container_name: some-vault
+    ports:
+      - "8200:8200"
+    env_file:
+    - ./.env_vault
+    volumes:
+      - /vault/file:/vault/file
+      - /vault/config:/vault/config
+      - /vault/logs:/vault/logs
+    cap_add:
+      - IPC_LOCK
+    command: ["vault","server","-dev"]
+
+  postgres:
+    image: postgres:11
+    container_name: some-postgres
+    volumes:
+    - /data/raw:/data/raw
+    - /data/postgres:/var/lib/postgresql/data
+    env_file:
+    - ./.env_postgres
+    ports:
+    - "5432:5432"
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: some-pgadmin
+    env_file:
+    - ./.env_pgadmin
+    volumes:
+      - ./:/root/.pgadmin
+    ports:
+      - "5050:80"
