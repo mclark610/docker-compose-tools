@@ -108,5 +108,16 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer_data:/data
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+    - PMA_ARBITRARY=1
+    restart: always
+    ports:
+    - 8085:80
+    volumes:
+    - /sessions
+
 volumes:
   portainer_data:
