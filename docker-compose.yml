@@ -94,6 +94,7 @@ services:
       - ./:/root/.pgadmin
     ports:
       - "5050:80"
+<<<<<<< HEAD
       
   portainer:
     image: portainer/portainer
@@ -121,3 +122,15 @@ services:
 
 volumes:
   portainer_data:
+=======
+
+  jenkins:
+    image: jenkins/jenkins
+    container_name: some-jenkins
+    user: root
+    ports:
+     - 8500:8080
+    volumes:
+     - /src/docker-system/jenkins_home:/var/jenkins_home
+     - /var/run/docker.sock:/var/run/docker.sock
+>>>>>>> 407cc2614f4740a71fd02eecd91c83e9fd6cf1d4
