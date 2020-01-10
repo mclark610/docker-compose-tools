@@ -1,0 +1,6 @@
+mariadb   x
+postgres  x
+redis     x
+portainer x 
+openproject x
+vault     x

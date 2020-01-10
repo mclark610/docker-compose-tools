@@ -11,8 +11,9 @@ services:
     image: mongo
     container_name: some-mongo
     restart: always
-    env_file:
-    - ./.env_mongo
+    environment:
+    - "MONGO_INITDB_ROOT_USERNAME: root"
+    - "MONGO_INITDB_ROOT_PASSWORD: my-secret-pw"
     volumes:
     - /data/mongo:/data/db
     - /data/raw:/data/raw
@@ -22,21 +23,25 @@ services:
   mariadb:
     image: mariadb
     container_name: some-mariadb
-    env_file:
-    - ./.env_mariadb
+    environment: 
+    - "MYSQL_ROOT_PASSWORD:my-secret-pw" 
     volumes: 
     - /data/mysql:/var/lib/mysql
     - /data/raw:/data/raw
     ports:
-    - 0.0.0.0:3306:3306
+    - 3306:3306
 
   redmine:
     image: redmine
     container_name: some-redmine
+    restart: always
     ports:
       - 8082:3000
-    env_file:
-    - ./.env_redmine
+    environment:
+      REDMINE_DB_POSTGRES: postgres  
+      REDMINE_DB_USERNAME: postgres
+      REDMINE_DB_PASSWORD: postgres01!
+      REDMINE_DB_DATABASE: redmine
     links:
     - postgres 
     depends_on:
@@ -47,8 +52,9 @@ services:
   openproject:
     image: openproject/community:8.3.0
     container_name: some-openproject
-    env_file:
-    - ./.env_openproject
+    environment:
+    - "SECRET_KEY_BASE=zonkers"
+    - "DATABASE_URL=mysql2://root:my-secret-pw@mariadb:3306/openproject"
     links:
     - mariadb
     depends_on:
@@ -64,8 +70,10 @@ services:
     container_name: some-vault
     ports:
       - "8200:8200"
-    env_file:
-    - ./.env_vault
+    environment:
+      - 'VAULT_DEV_ROOT_TOKEN_ID=6825'
+      - 'VAULT_DEV_LISTEN_ADDRESS=0.0.0.0:8200'
+      - 'VAULT_ADDR=http://127.0.0.1:8200'
     volumes:
       - /vault/file:/vault/file
       - /vault/config:/vault/config
@@ -80,33 +88,21 @@ services:
     volumes:
     - /data/raw:/data/raw
     - /data/postgres:/var/lib/postgresql/data
-    env_file:
-    - ./.env_postgres
+    environment:
+    - POSTGRES_DB=postgres
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres01!
     ports:
     - "5432:5432"
 
   pgadmin:
     image: dpage/pgadmin4
     container_name: some-pgadmin
-    env_file:
-    - ./.env_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: pwd
     volumes:
       - ./:/root/.pgadmin
     ports:
       - "5050:80"
-      
-  portainer:
-    image: portainer/portainer
-    container_name: some-portainer
-    #command: -H unix:///var/run/docker.sock
-    environment:
-     - "PORTAINER_ADMIN_NAME: admin"
-     - "PORTAINER_ADMIN_PASS: password"
-    ports:
-      - 9000:9000
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - portainer_data:/data
 
-volumes:
-  portainer_data:
