@@ -94,15 +94,14 @@ services:
       - ./:/root/.pgadmin
     ports:
       - "5050:80"
-<<<<<<< HEAD
       
   portainer:
     image: portainer/portainer
     container_name: some-portainer
     #command: -H unix:///var/run/docker.sock
     environment:
-     - "PORTAINER_ADMIN_NAME: admin"
-     - "PORTAINER_ADMIN_PASS: password"
+     - "PORTAINER_ADMIN_NAME:admin"
+     - "PORTAINER_ADMIN_PASS:password"
     ports:
       - 9000:9000
     volumes:
@@ -120,10 +119,6 @@ services:
     volumes:
     - /sessions
 
-volumes:
-  portainer_data:
-=======
-
   jenkins:
     image: jenkins/jenkins
     container_name: some-jenkins
@@ -133,4 +128,19 @@ volumes:
     volumes:
      - /src/docker-system/jenkins_home:/var/jenkins_home
      - /var/run/docker.sock:/var/run/docker.sock
->>>>>>> 407cc2614f4740a71fd02eecd91c83e9fd6cf1d4
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-CU3-ubuntu-18.04
+    container_name: some-mssql
+    ports:
+    - 1433:1433
+    env_file:
+       ./.env_mssql
+    volumes:
+    - /data/raw:/data/raw
+    - sqlvolume:/var/opt/mssql
+
+
+volumes:
+  portainer_data: 
+  sqlvolume:

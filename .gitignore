@@ -5,6 +5,9 @@
 .env_postgres
 .env_openproject
 .env_vault
+.env_mssql
+docker-compose.yaml.*
+jenkins.sh.*
 backups
 scripts
 jenkins_home
