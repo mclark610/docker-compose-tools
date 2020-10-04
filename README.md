@@ -28,9 +28,9 @@ mariadb:
     ports:
     - 0.0.0.0:3306:3306
 
-volumes:
-  I have a directory in my root named /data
-  I place all my databases here I develop including a directory all containers have common access to.  This is for easily running command line importing and exporting tools.
+volumes:<br/>
+  I have a directory in my root named /data<br/>
+  I place all my databases here I develop including a directory all containers have common access to.  This is for easily running command line importing and exporting tools.<br/>
   The data directory structure:
   /data
   /data/raw : sql files for importing into any database
