@@ -7,6 +7,7 @@
 .env_vault
 .env_mssql
 .env_odoo
+.env_oracle
 docker-compose.yml.*
 jenkins.sh.*
 backups
