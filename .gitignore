@@ -8,10 +8,5 @@
 .env_mssql
 .env_odoo
 .env_oracle
-docker-compose.yml.*
-jenkins.sh.*
-backups
-scripts
+.env_rabbit
 jenkins_home
-odoo
-db

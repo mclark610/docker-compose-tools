@@ -9,8 +9,8 @@ services:
 
   mongo:
     image: mongo
-    container_name: some-mongo
     restart: always
+    container_name: some-mongo
     env_file:
     - ./.env_mongo
     volumes:
@@ -37,8 +37,8 @@ services:
     - '1521:1521'
     - '8089:8080'
     - '2222:22'
-    env_file:
-    - ./.env_oracle
+    #env_file:
+    #- ./.env_oracle
     volumes:
     - /data/oracle/oradata:/opt/oracle/oradata 
     - /data/raw:/data/raw
@@ -59,6 +59,15 @@ services:
     env_file:
       - ./.env_odoo
 
+  rabbitmq:
+    image: 'rabbitmq'
+    container_name: 'some-rabbit'
+    ports:
+      - '5672:5672'
+      - '8080:8650'
+    env_file:
+    - ./.env_rabbit
+
   redmine:
     image: redmine
     container_name: some-redmine
@@ -70,9 +79,7 @@ services:
     - postgres 
     depends_on:
     - postgres
-    volumes:
-    - /var/lib/redmine/files:/usr/src/redmin/files
- 
+
   openproject:
     image: openproject/community
     container_name: some-openproject
@@ -107,7 +114,7 @@ services:
     image: postgres:11
     container_name: some-postgres
     volumes:
-    - /data/raw:/data/raw
+    - /data/raw:/var/lib/postgresql/data/pgdata
     - /data/postgres:/var/lib/postgresql/data
     env_file:
     - ./.env_postgres
@@ -169,6 +176,44 @@ services:
     - /data/raw:/data/raw
     - sqlvolume:/var/opt/mssql
 
+  httpd:
+    image: php-apache2
+    container_name: some_httpd
+    ports:
+    - 8089:80
+    volumes:
+    - /src/php:/var/www/html
+
+  spark:
+    image: docker.io/bitnami/spark:3
+    container_name: some_spark
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - '8600:8080'
+    volumes:
+      - /data/raw:/data/raw
+
+  spark-worker:
+    image: docker.io/bitnami/spark:3
+    container_name: some_spark_worker
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    volumes:
+      - /data/raw:/data/raw
+
+  
 networks:
   default:
     driver: bridge
